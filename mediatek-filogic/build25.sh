@@ -16,6 +16,28 @@ else
   echo "✅ Run files copied to extra-packages:"
   # 解压并拷贝apk到packages目录
   sh shell/apk-prepare-packages.sh
+
+  # MosDNS 不在 25.12 ImageBuilder 默认仓库中，使用上游发布的 aarch64_cortex-a53 APK。
+  if echo " $CUSTOM_PACKAGES " | grep -q " luci-app-mosdns "; then
+    MOSDNS_ARCHIVE="aarch64_cortex-a53-openwrt-25.12.tar.gz"
+    MOSDNS_URL="https://github.com/sbwml/luci-app-mosdns/releases/latest/download/$MOSDNS_ARCHIVE"
+    MOSDNS_TMP="$(mktemp -d /tmp/mosdns-apk.XXXXXX)"
+
+    echo "🔄 正在下载 MosDNS v5 for OpenWrt 25.12..."
+    if ! curl -fL --retry 3 --connect-timeout 10 \
+      -o "$MOSDNS_TMP/$MOSDNS_ARCHIVE" "$MOSDNS_URL"; then
+      echo "❌ MosDNS APK 下载失败"
+      exit 1
+    fi
+    if ! tar -xzf "$MOSDNS_TMP/$MOSDNS_ARCHIVE" -C "$MOSDNS_TMP"; then
+      echo "❌ MosDNS APK 解压失败"
+      exit 1
+    fi
+    cp "$MOSDNS_TMP"/packages_ci/*.apk /home/build/immortalwrt/packages/
+    rm -rf "$MOSDNS_TMP"
+    echo "✅ MosDNS APK packages copied"
+  fi
+
   ls -lah /home/build/immortalwrt/packages/
 fi
 
