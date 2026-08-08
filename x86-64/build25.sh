@@ -36,6 +36,44 @@ else
   echo "✅ Run files copied to extra-packages:"
   # 解压并拷贝apk到packages目录
   sh shell/apk-prepare-packages.sh
+
+  # MosDNS 不在 25.12 x86 ImageBuilder 默认仓库中，使用上游发布的 x86_64 APK。
+  if echo " $CUSTOM_PACKAGES " | grep -q " luci-app-mosdns "; then
+    MOSDNS_ARCHIVE="x86_64-openwrt-25.12.tar.gz"
+    MOSDNS_URL="https://github.com/sbwml/luci-app-mosdns/releases/latest/download/$MOSDNS_ARCHIVE"
+    MOSDNS_TMP="$(mktemp -d /tmp/mosdns-apk.XXXXXX)"
+
+    echo "🔄 正在下载 MosDNS v5 for x86_64 OpenWrt 25.12..."
+    if ! curl -fL --retry 3 --connect-timeout 10 \
+      -o "$MOSDNS_TMP/$MOSDNS_ARCHIVE" "$MOSDNS_URL"; then
+      echo "❌ MosDNS APK 下载失败: $MOSDNS_URL"
+      rm -rf "$MOSDNS_TMP"
+      exit 1
+    fi
+    if ! tar -xzf "$MOSDNS_TMP/$MOSDNS_ARCHIVE" -C "$MOSDNS_TMP"; then
+      echo "❌ MosDNS APK 解压失败: $MOSDNS_ARCHIVE"
+      rm -rf "$MOSDNS_TMP"
+      exit 1
+    fi
+
+    MOSDNS_APKS=("$MOSDNS_TMP"/packages_ci/*.apk)
+    if [ ! -e "${MOSDNS_APKS[0]}" ]; then
+      echo "❌ MosDNS 发布包中没有找到 packages_ci/*.apk"
+      rm -rf "$MOSDNS_TMP"
+      exit 1
+    fi
+    cp "${MOSDNS_APKS[@]}" /home/build/immortalwrt/packages/
+    rm -rf "$MOSDNS_TMP"
+
+    for package in luci-app-mosdns luci-i18n-mosdns-zh-cn; do
+      if ! compgen -G "/home/build/immortalwrt/packages/${package}-*.apk" >/dev/null; then
+        echo "❌ MosDNS 发布包缺少必需软件包: $package"
+        exit 1
+      fi
+    done
+    echo "✅ MosDNS x86_64 APK packages copied"
+  fi
+
   ls -lah /home/build/immortalwrt/packages/
 fi
 
