@@ -12,8 +12,13 @@ JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-ddns-go luci-i18n-ddns-go-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-wol luci-i18n-wol-zh-cn luci-app-watchcat luci-i18n-watchcat-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES block-mount e2fsprogs kmod-fs-ext4 lsblk blkid"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-irqbalance luci-i18n-irqbalance-zh-cn"
+JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-nlbwmon luci-i18n-nlbwmon-zh-cn"
+JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-filemanager luci-i18n-filemanager-zh-cn"
+JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-upnp luci-i18n-upnp-zh-cn"
+JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-sqm luci-i18n-sqm-zh-cn"
+JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-ksmbd luci-i18n-ksmbd-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES htop ethtool"
-# 覆盖 build25.sh 的通用桌面插件，避免亚瑟镜像重新拉入磁盘管理和文件管理依赖。
-JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES -luci-i18n-diskman-zh-cn -luci-i18n-filemanager-zh-cn"
+# 覆盖 build25.sh 的通用桌面插件，避免亚瑟镜像重新拉入磁盘管理依赖。
+JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES -luci-i18n-diskman-zh-cn"
 
 export JDCLOUD_PACKAGES

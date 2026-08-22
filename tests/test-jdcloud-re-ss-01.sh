@@ -42,18 +42,20 @@ for package in luci-app-homeproxy sing-box \
     luci-app-mosdns luci-app-tailscale-community \
     luci-i18n-ttyd-zh-cn luci-app-ddns-go \
     luci-app-wol luci-app-watchcat block-mount \
-    e2fsprogs kmod-fs-ext4 luci-app-irqbalance htop ethtool; do
+    e2fsprogs kmod-fs-ext4 luci-app-irqbalance \
+    luci-app-nlbwmon luci-app-filemanager luci-app-upnp \
+    luci-app-sqm luci-app-ksmbd htop ethtool; do
     [[ " $JDCLOUD_PACKAGES " == *" $package "* ]] || fail "Arthur package list is missing $package"
 done
 
 for package in luci-app-openclash luci-app-dockerman dockerd docker qemu-ga \
     luci-app-passwall luci-i18n-passwall-zh-cn geoview \
-    xray-core hysteria luci-app-nlbwmon luci-app-vnstat2 \
+    xray-core hysteria luci-app-vnstat2 \
     tcpdump iperf3 bind-dig mtr-json; do
     [[ " $JDCLOUD_PACKAGES " != *" $package "* ]] || fail "Arthur package list must exclude $package"
 done
 
-for package in luci-i18n-diskman-zh-cn luci-i18n-filemanager-zh-cn; do
+for package in luci-i18n-diskman-zh-cn; do
     [[ " $JDCLOUD_PACKAGES " == *" -$package "* ]] || fail "Arthur package list must remove $package"
 done
 
