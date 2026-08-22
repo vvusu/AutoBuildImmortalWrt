@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# 按设备分支需求预装多套代理/DNS 管理界面；安装后只能启用一套透明代理，
-# 避免 HomeProxy、PassWall、OpenClash 同时争用 DNS/nftables/TProxy 规则。
-# OpenClash 的核心和 Geo 数据首次启动后写入 128G overlay，不塞进系统镜像。
+# 按设备分支需求预装 HomeProxy、PassWall 和 DNS 管理界面；
+# HomeProxy 与 PassWall 安装后只能启用一套透明代理，避免争用 DNS/nftables/TProxy 规则。
 JDCLOUD_PACKAGES=""
-JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-openclash luci-compat kmod-tun kmod-inet-diag kmod-nft-tproxy bash curl ip-full unzip"
+JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-compat kmod-tun kmod-inet-diag kmod-nft-tproxy bash curl ip-full unzip"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-homeproxy luci-i18n-homeproxy-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES geoview xray-core sing-box hysteria luci-app-passwall luci-i18n-passwall-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-mosdns luci-i18n-mosdns-zh-cn"
