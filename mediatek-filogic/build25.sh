@@ -1,5 +1,15 @@
 #!/bin/bash
 source shell/apk-custom-packages.sh
+
+# 京东云亚瑟使用独立清单，不随全局 PVE 配置继续漂移；Docker 始终排除。
+if [ "$PROFILE" = "jdcloud_re-ss-01" ]; then
+  source shell/jdcloud-re-ss-01-packages.sh
+  CUSTOM_PACKAGES="$JDCLOUD_PACKAGES"
+  if [ "$INCLUDE_DOCKER" = "yes" ]; then
+    echo "⚠️ 亚瑟首版固件不集成 Docker，已忽略 INCLUDE_DOCKER=yes"
+    INCLUDE_DOCKER="no"
+  fi
+fi
 #echo "✅ 你选择了第三方软件包：$CUSTOM_PACKAGES"
 if [ -z "$CUSTOM_PACKAGES" ]; then
   echo "⚪️ 未选择 任何第三方软件包"
@@ -92,15 +102,19 @@ fi
 
 # 若构建openclash 则添加内核
 if echo "$PACKAGES" | grep -q "luci-app-openclash"; then
-    echo "✅ 已选择 luci-app-openclash，添加 openclash core"
-    mkdir -p files/etc/openclash/core
-    # Download clash_meta
-    META_URL="https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-arm64.tar.gz"
-    wget -qO- $META_URL | tar xOvz > files/etc/openclash/core/clash_meta
-    chmod +x files/etc/openclash/core/clash_meta
-    # Download GeoIP and GeoSite
-    wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat -O files/etc/openclash/GeoIP.dat
-    wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat -O files/etc/openclash/GeoSite.dat
+    if [ "$PROFILE" = "jdcloud_re-ss-01" ]; then
+      echo "✅ 亚瑟仅预装 OpenClash UI；核心和 Geo 数据留待首次启动后写入 overlay"
+    else
+      echo "✅ 已选择 luci-app-openclash，添加 openclash core"
+      mkdir -p files/etc/openclash/core
+      # Download clash_meta
+      META_URL="https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-arm64.tar.gz"
+      wget -qO- "$META_URL" | tar xOvz > files/etc/openclash/core/clash_meta
+      chmod +x files/etc/openclash/core/clash_meta
+      # Download GeoIP and GeoSite
+      wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat -O files/etc/openclash/GeoIP.dat
+      wget -q https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat -O files/etc/openclash/GeoSite.dat
+    fi
     # Download latest openclash Client
     URL=$(curl -s https://api.github.com/repos/vernesong/OpenClash/releases/latest \
       | grep "browser_download_url.*apk" \
@@ -122,6 +136,10 @@ make image PROFILE=$PROFILE PACKAGES="$PACKAGES" FILES="/home/build/immortalwrt/
 if [ $? -ne 0 ]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Error: Build failed!"
     exit 1
+fi
+
+if [ "$PROFILE" = "jdcloud_re-ss-01" ]; then
+    bash shell/verify-jdcloud-re-ss-01-image.sh /home/build/immortalwrt/bin
 fi
 
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Build completed successfully."

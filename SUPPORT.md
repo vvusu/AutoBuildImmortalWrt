@@ -139,6 +139,15 @@
 
 >  ### MediaTek 路由器工作流（大约103种）build-wireless-router.yml 
 
+### 高通 IPQ60xx 路由器（build-wireless-router25.12.yml）
+
+| ImageBuilder Profile | 设备 | SoC | Target | 构建源 |
+|---|---|---|---|---|
+| `jdcloud_re-ss-01` | 京东云 AX1800 Pro（亚瑟，128G 版） | IPQ6018 | `qualcommax/ipq60xx` | ImmortalWrt Snapshot / APK |
+
+> 注意：`jdcloud_re-cs-02` 是京东云 AX6600「雅典娜」，不是 AX1800 Pro「亚瑟」，两个 profile 不能混用。当前稳定版 ImageBuilder 不含亚瑟 profile，因此此机型固定使用 qualcommax/ipq60xx Snapshot 构建。
+> 亚瑟分支不集成 Docker；HomeProxy、PassWall、OpenClash 可以同时安装，但运行时只能启用其中一套透明代理，避免 DNS、nftables、TProxy/TUN 规则冲突。
+
 | 机型 | 机型 | 机型 |
 |------|------|------|
 | abt_asr3000 | acelink_ew-7886cax | acer_predator-w6 |
@@ -301,4 +310,3 @@
 | BIN  | 泛二进制      | Bootloader/内核等   | 烧录或加载执行          |
 | UBI  | NAND 文件系统 | UBIFS 镜像         | 嵌入式 NAND 路由器/开发板 |
 | ITB  | U-Boot 镜像 | 内核+设备树+initramfs | U-Boot 启动镜像      |
-
