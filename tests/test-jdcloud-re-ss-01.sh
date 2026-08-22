@@ -8,6 +8,7 @@ SUPPORT="$ROOT_DIR/SUPPORT.md"
 BUILD_SCRIPT="$ROOT_DIR/mediatek-filogic/build25.sh"
 PACKAGE_FILE="$ROOT_DIR/shell/jdcloud-re-ss-01-packages.sh"
 VERIFIER="$ROOT_DIR/shell/verify-jdcloud-re-ss-01-image.sh"
+FACTORY_PATCHER="$ROOT_DIR/shell/enable-jdcloud-re-ss-01-factory.sh"
 
 fail() {
     echo "FAIL: $*" >&2
@@ -53,13 +54,27 @@ done
 assert_contains "$BUILD_SCRIPT" 'libubox20260721-2026.07.21~e7608b69-r1.apk'
 assert_contains "$BUILD_SCRIPT" 'libblobmsg-json20260721-2026.07.21~e7608b69-r1.apk'
 assert_contains "$BUILD_SCRIPT" '488c471ab4874b15b14ef4be552ed64a31f6c14fa687e52df5bdf5beea49a63b'
-assert_contains "$BUILD_SCRIPT" '$(call Device/EmmcImage)'
+assert_contains "$BUILD_SCRIPT" 'enable-jdcloud-re-ss-01-factory.sh'
 assert_contains "$VERIFIER" 'MAX_FACTORY_SIZE_BYTES=62914560'
 
 test -x "$VERIFIER" || fail "missing executable Arthur image verifier"
+test -x "$FACTORY_PATCHER" || fail "missing executable Arthur factory patcher"
 
 FIXTURE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/jdcloud-image-test.XXXXXX")"
 trap 'rm -rf "$FIXTURE_DIR"' EXIT
+cat > "$FIXTURE_DIR/ipq60xx.mk" <<'EOF'
+define Device/jdcloud_re-ss-01
+	$(call Device/FitImage)
+endef
+EOF
+"$FACTORY_PATCHER" "$FIXTURE_DIR/ipq60xx.mk"
+factory_line="$(sed -n '2p' "$FIXTURE_DIR/ipq60xx.mk")"
+[[ "$factory_line" == $'\t$(call Device/EmmcImage)' ]] || \
+    fail "factory patcher did not insert a real Makefile tab"
+if [[ "$factory_line" == *'\t'* ]]; then
+    fail "factory patcher inserted a literal backslash-t"
+fi
+
 printf '%s\n' '{"supported_devices":["jdcloud,re-ss-01"]}' > \
     "$FIXTURE_DIR/immortalwrt-qualcommax-ipq60xx-jdcloud_re-ss-01-squashfs-sysupgrade.bin"
 printf 'fake factory image\n' > \

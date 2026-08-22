@@ -152,7 +152,7 @@ fi
 # Snapshot 尚未给亚瑟声明 eMMC factory 产物；安全 U-Boot 首刷需要 rootfs factory.bin。
 if [ "$PROFILE" = "jdcloud_re-ss-01" ]; then
   DEVICE_MAKEFILE="target/linux/qualcommax/image/ipq60xx.mk"
-  sed -i '/^define Device\/jdcloud_re-ss-01$/a\\\t$(call Device/EmmcImage)' "$DEVICE_MAKEFILE"
+  bash shell/enable-jdcloud-re-ss-01-factory.sh "$DEVICE_MAKEFILE"
 fi
 
 # 构建镜像
