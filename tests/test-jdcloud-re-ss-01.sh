@@ -38,7 +38,7 @@ assert_contains "$BUILD_SCRIPT" 'if ! bash shell/verify-jdcloud-re-ss-01-image.s
 
 # shellcheck disable=SC1090
 source "$PACKAGE_FILE"
-for package in luci-app-homeproxy luci-app-passwall \
+for package in luci-app-homeproxy sing-box \
     luci-app-mosdns luci-app-tailscale-community \
     luci-i18n-ttyd-zh-cn luci-app-ddns-go \
     luci-app-wol luci-app-watchcat block-mount \
@@ -47,6 +47,7 @@ for package in luci-app-homeproxy luci-app-passwall \
 done
 
 for package in luci-app-openclash luci-app-dockerman dockerd docker qemu-ga \
+    luci-app-passwall luci-i18n-passwall-zh-cn geoview \
     xray-core hysteria luci-app-nlbwmon luci-app-vnstat2 \
     tcpdump iperf3 bind-dig mtr-json; do
     [[ " $JDCLOUD_PACKAGES " != *" $package "* ]] || fail "Arthur package list must exclude $package"

@@ -1,12 +1,10 @@
 #!/bin/bash
 
-# 按设备分支需求预装 HomeProxy、PassWall 和 DNS 管理界面；
-# HomeProxy 与 PassWall 安装后只能启用一套透明代理，避免争用 DNS/nftables/TProxy 规则。
+# 按设备分支需求预装 HomeProxy 和 DNS 管理界面。
 JDCLOUD_PACKAGES=""
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-compat kmod-tun kmod-inet-diag kmod-nft-tproxy bash curl ip-full unzip"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-homeproxy luci-i18n-homeproxy-zh-cn"
-# HomeProxy 与 PassWall 共用 sing-box；不重复内置 xray-core 和独立 hysteria 核心。
-JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES geoview sing-box luci-app-passwall luci-i18n-passwall-zh-cn"
+JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES sing-box"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-mosdns luci-i18n-mosdns-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-tailscale-community luci-i18n-tailscale-community-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-i18n-ttyd-zh-cn openssh-sftp-server"
