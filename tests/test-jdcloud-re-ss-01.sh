@@ -42,13 +42,18 @@ for package in luci-app-homeproxy luci-app-passwall \
     luci-app-mosdns luci-app-tailscale-community \
     luci-i18n-ttyd-zh-cn luci-app-ddns-go \
     luci-app-wol luci-app-watchcat block-mount \
-    e2fsprogs kmod-fs-ext4 luci-app-irqbalance luci-app-nlbwmon \
-    luci-app-vnstat2 htop ethtool tcpdump iperf3; do
+    e2fsprogs kmod-fs-ext4 luci-app-irqbalance htop ethtool; do
     [[ " $JDCLOUD_PACKAGES " == *" $package "* ]] || fail "Arthur package list is missing $package"
 done
 
-for package in luci-app-openclash luci-app-dockerman dockerd docker qemu-ga; do
+for package in luci-app-openclash luci-app-dockerman dockerd docker qemu-ga \
+    xray-core hysteria luci-app-nlbwmon luci-app-vnstat2 \
+    tcpdump iperf3 bind-dig mtr-json; do
     [[ " $JDCLOUD_PACKAGES " != *" $package "* ]] || fail "Arthur package list must exclude $package"
+done
+
+for package in luci-i18n-diskman-zh-cn luci-i18n-filemanager-zh-cn; do
+    [[ " $JDCLOUD_PACKAGES " == *" -$package "* ]] || fail "Arthur package list must remove $package"
 done
 
 assert_contains "$BUILD_SCRIPT" 'libubox20260721-2026.07.21~e7608b69-r1.apk'
