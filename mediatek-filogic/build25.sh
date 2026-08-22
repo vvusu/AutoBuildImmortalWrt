@@ -51,6 +51,28 @@ else
   ls -lah /home/build/immortalwrt/packages/
 fi
 
+# 2026-08 的 IPQ60xx Snapshot ImageBuilder 与滚动 APK 仓库短暂错位：
+# target 中的 mtd/block-mount 仍依赖 20260721 ABI，而 ImmortalWrt base 索引已移除它。
+# OpenWrt 同架构仓库保留了完全相同 ABI 的构建，固定文件名和 SHA-256 后作为临时兼容包。
+if [ "$PROFILE" = "jdcloud_re-ss-01" ]; then
+  COMPAT_BASE_URL="https://downloads.openwrt.org/snapshots/packages/aarch64_cortex-a53/base"
+  download_compat_apk() {
+    apk_name="$1"
+    apk_sha256="$2"
+    apk_path="/home/build/immortalwrt/packages/$apk_name"
+    echo "🔄 下载 Snapshot ABI 兼容包：$apk_name"
+    curl -fL --retry 3 --connect-timeout 10 -o "$apk_path" "$COMPAT_BASE_URL/$apk_name"
+    echo "$apk_sha256  $apk_path" | sha256sum -c -
+  }
+
+  download_compat_apk \
+    "libubox20260721-2026.07.21~e7608b69-r1.apk" \
+    "488c471ab4874b15b14ef4be552ed64a31f6c14fa687e52df5bdf5beea49a63b"
+  download_compat_apk \
+    "libblobmsg-json20260721-2026.07.21~e7608b69-r1.apk" \
+    "431defe92018b21b29cc6af699903c3d57900bcb7b1699a7ef6659de47d07793"
+fi
+
 
 
 # yml 传入的路由器型号 PROFILE
@@ -127,6 +149,12 @@ else
 fi
 
 
+# Snapshot 尚未给亚瑟声明 eMMC factory 产物；安全 U-Boot 首刷需要 rootfs factory.bin。
+if [ "$PROFILE" = "jdcloud_re-ss-01" ]; then
+  DEVICE_MAKEFILE="target/linux/qualcommax/image/ipq60xx.mk"
+  sed -i '/^define Device\/jdcloud_re-ss-01$/a\\\t$(call Device/EmmcImage)' "$DEVICE_MAKEFILE"
+fi
+
 # 构建镜像
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Building image with the following packages:"
 echo "$PACKAGES"
@@ -139,7 +167,10 @@ if [ $? -ne 0 ]; then
 fi
 
 if [ "$PROFILE" = "jdcloud_re-ss-01" ]; then
-    bash shell/verify-jdcloud-re-ss-01-image.sh /home/build/immortalwrt/bin
+    if ! bash shell/verify-jdcloud-re-ss-01-image.sh /home/build/immortalwrt/bin; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - Error: Arthur artifact safety verification failed!"
+        exit 1
+    fi
 fi
 
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Build completed successfully."

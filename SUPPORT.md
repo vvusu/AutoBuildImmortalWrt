@@ -147,6 +147,7 @@
 
 > 注意：`jdcloud_re-cs-02` 是京东云 AX6600「雅典娜」，不是 AX1800 Pro「亚瑟」，两个 profile 不能混用。当前稳定版 ImageBuilder 不含亚瑟 profile，因此此机型固定使用 qualcommax/ipq60xx Snapshot 构建。
 > 亚瑟分支不集成 Docker；HomeProxy、PassWall、OpenClash 可以同时安装，但运行时只能启用其中一套透明代理，避免 DNS、nftables、TProxy/TUN 规则冲突。
+> `qemu-ga` 仅适用于 QEMU/PVE 虚拟机，IPQ60xx 软件仓库不提供该包，因此亚瑟分支不集成它。
 
 | 机型 | 机型 | 机型 |
 |------|------|------|

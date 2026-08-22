@@ -6,6 +6,7 @@ OUTPUT_DIR="${1:-/home/build/immortalwrt/bin}"
 PROFILE_TOKEN="jdcloud_re-ss-01"
 DEVICE_ID="jdcloud,re-ss-01"
 LEGACY_ID="jdcloud,ax1800-pro"
+MAX_FACTORY_SIZE_BYTES=62914560
 
 fail() {
     echo "❌ $*" >&2
@@ -47,6 +48,19 @@ while IFS= read -r artifact; do
 done < <(printf '%s\n' "${artifacts[@]}" | \
     grep -E -- '(initramfs.*\.itb|factory.*\.(bin|ubi)|recovery.*\.(bin|itb))$' || true)
 ((${#recoveries[@]} > 0)) || fail "未找到可供安全 U-Boot 启动/恢复测试的 initramfs、factory 或 recovery 镜像"
+
+factory_count=0
+for recovery in "${recoveries[@]}"; do
+    case "$recovery" in
+        *-factory.bin)
+            factory_count=$((factory_count + 1))
+            factory_size="$(wc -c < "$recovery" | tr -d ' ')"
+            ((factory_size <= MAX_FACTORY_SIZE_BYTES)) || \
+                fail "factory.bin 为 ${factory_size} 字节，超过默认分区 60 MiB 安全上限"
+            ;;
+    esac
+done
+((factory_count == 1)) || fail "必须且只能生成一个亚瑟 factory.bin，实际为 ${factory_count} 个"
 
 echo "✅ sysupgrade 元数据确认：$DEVICE_ID"
 echo "✅ U-Boot 首次测试候选（先内存启动，不等于已确认可写入分区）："

@@ -8,7 +8,6 @@ JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-openclash luci-compat kmod-tun kmod
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-homeproxy luci-i18n-homeproxy-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES geoview xray-core sing-box hysteria luci-app-passwall luci-i18n-passwall-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-mosdns luci-i18n-mosdns-zh-cn luci-app-adguardhome"
-JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES qemu-ga"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-i18n-ttyd-zh-cn openssh-sftp-server"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-ddns-go luci-i18n-ddns-go-zh-cn"
 JDCLOUD_PACKAGES="$JDCLOUD_PACKAGES luci-app-wol luci-i18n-wol-zh-cn luci-app-watchcat luci-i18n-watchcat-zh-cn"
